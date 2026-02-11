@@ -6,11 +6,18 @@
     <title>ABSURD SMP | Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #f38020; --twitch: #9146FF; --discord: #5865F2; --glass: rgba(0, 0, 0, 0.85); --border: rgba(255, 255, 255, 0.1); }
-        
-        /* Updated Background Image Here */
+        :root { 
+            --primary: #f38020; 
+            --twitch: #9146FF; 
+            --discord: #5865F2; 
+            --glass: rgba(0, 0, 0, 0.85); 
+            --border: rgba(255, 255, 255, 0.1); 
+        }
+
         body { 
-            background: linear-gradient(rgba(10, 10, 11, 0.7), rgba(10, 10, 11, 0.7)), url('https://r.jina.ai/i/0556536098714041bc56247ec6cc682a'); 
+            /* Cherry Grove Wallpaper Integration */
+            background: linear-gradient(rgba(10, 10, 11, 0.6), rgba(10, 10, 11, 0.6)), 
+                        url('https://www.minecraft.net/content/dam/games/minecraft/key-art/Cherry_Grove_Wallpaper.jpg'); 
             background-size: cover; 
             background-attachment: fixed; 
             background-position: center;
@@ -36,6 +43,8 @@
         .member-card:hover { transform: translateY(-10px); border-color: var(--primary); }
         .member-card.is-live { border-color: #ff4b4b !important; box-shadow: 0 0 25px rgba(255, 75, 75, 0.3); }
 
+        .live-badge { position: absolute; top: 15px; right: 15px; background: #ff4b4b; color: white; padding: 5px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 900; letter-spacing: 1px; }
+
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
         .gallery-item { background: var(--glass); border-radius: 20px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; }
         .gallery-item:hover { transform: scale(1.02); border-color: var(--primary); }
@@ -49,6 +58,7 @@
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 9999; }
         .modal-content { background: #0c0c0d; border: 1px solid var(--border); padding: 50px; border-radius: 40px; text-align: center; position: relative; }
         .close-btn { position: absolute; top: 25px; right: 30px; font-size: 2.5rem; color: #444; cursor: pointer; }
+        .avatar-img { width: 150px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -64,7 +74,7 @@
     <div id="home" class="page-section active">
         <div class="header-panel">
             <h1>Absurd SMP</h1>
-            <p id="server-status" style="font-weight: 800; color: #777; margin-top: 20px;">CHECKING SERVER...</p>
+            <p id="server-status" style="font-weight: 800; color: #bbb; margin-top: 20px;">CHECKING SERVER...</p>
             <div style="margin-top: 25px;">
                 <button class="btn btn-primary" onclick="copyIP()">Copy IP</button>
                 <a href="https://discord.gg/MUFD22facY" target="_blank" class="btn btn-primary" style="background:#5865F2; color:white;">Discord</a>
@@ -76,7 +86,7 @@
     <div id="gallery" class="page-section">
         <div class="header-panel">
             <h1>Server Gallery</h1>
-            <p style="color:#777">Builds and photos from the Absurd world.</p>
+            <p style="color:#bbb">Builds and photos from the Absurd world.</p>
         </div>
         <div class="gallery-grid" id="gallery-list"></div>
     </div>
@@ -94,15 +104,18 @@
 
 <script>
     // --- GITHUB CONFIG ---
-    const GITHUB_USER = "YourUsername"; //
-    const REPO_NAME = "YourRepo"; //
+    const GITHUB_USER = "ZAPPERCOR1955"; 
+    const REPO_NAME = "absurd-smp-site"; 
 
     async function loadGallery() {
         const container = document.getElementById('gallery-list');
-        container.innerHTML = '';
+        container.innerHTML = 'Loading Gallery...';
         try {
-            const res = await fetch(`https://api.github.com/repos/ZAPPERCOR1955/absurd-smp-site/contents/gallery`);
+            const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/gallery`);
             const files = await res.json();
+            if (files.message) throw new Error(files.message);
+            
+            container.innerHTML = '';
             const images = files.filter(f => f.name.match(/\.(jpg|jpeg|png|gif)$/i));
             images.forEach(f => {
                 const item = document.createElement('div');
@@ -111,7 +124,10 @@
                 item.innerHTML = `<img src="${f.download_url}">`;
                 container.appendChild(item);
             });
-        } catch (e) { console.error("Gallery failed", e); }
+        } catch (e) { 
+            console.error("Gallery failed", e); 
+            container.innerHTML = '<p style="color:red">Failed to load gallery images.</p>';
+        }
     }
 
     function showPage(pageId) {
@@ -124,6 +140,7 @@
 
     const TWITCH_CLIENT_ID = 'h3u5xqt2omzby9zoshbixb20oytip8';
     const TWITCH_SECRET = 'kj1udguy15ax1s2exy13ba4zaqapw1';
+    
     const members = [
         { name: 'zappercor1955', uuid: '8429c0a0-5912-48dc-aa6c-cb4ce079c019', twitch: 'zappercor1955', ytId: 'UC5yAOhjDAfNwpRjD9sU9iGw', ytLink: 'https://youtube.com/@zappercor' },
         { name: 'SP_Bubbles', uuid: 'af386647-2d8b-4f2e-807f-d82fd794b894', twitch: '', ytId: 'UCml1QZ1gCQzoPuo55qXUITg', ytLink: 'https://youtube.com/@SP_Bubbles' },
@@ -139,13 +156,14 @@
             const token = tokenData.access_token;
             const twitchLogins = members.map(m => m.twitch).filter(Boolean).join('&user_login=');
             let liveUsers = [];
+            
             if (twitchLogins) {
                 const tRes = await fetch(`https://api.twitch.tv/helix/streams?user_login=${twitchLogins}`, { headers: { "Client-ID": TWITCH_CLIENT_ID, "Authorization": `Bearer ${token}` } });
                 const tData = await tRes.json();
                 liveUsers = (tData.data || []).map(s => s.user_login.toLowerCase());
             }
+
             for (let m of members) {
-                m.isLive = false; m.newVideo = false; // Reset
                 m.isLive = m.twitch && liveUsers.includes(m.twitch.toLowerCase());
                 if (!m.isLive && m.ytId) {
                     try {
@@ -188,10 +206,19 @@
 
     function closeModal() { document.getElementById('modal').style.display = 'none'; }
     function copyIP() { navigator.clipboard.writeText("play.AbsurdSMP.com"); alert("IP Copied!"); }
-    function updateServerStatus() { fetch('https://api.mcsrvstat.us/2/play.AbsurdSMP.com').then(r => r.json()).then(data => { document.getElementById('server-status').innerHTML = data.online ? `<span style="color:#4ade80">● ONLINE</span> — ${data.players.online}/${data.players.max} PLAYERS` : `<span style="color:#ff4d4d">● OFFLINE</span>`; }); }
+    
+    function updateServerStatus() { 
+        fetch('https://api.mcsrvstat.us/2/play.AbsurdSMP.com').then(r => r.json()).then(data => { 
+            document.getElementById('server-status').innerHTML = data.online ? 
+            `<span style="color:#4ade80">● ONLINE</span> — ${data.players.online}/${data.players.max} PLAYERS` : 
+            `<span style="color:#ff4d4d">● OFFLINE</span>`; 
+        }); 
+    }
 
-    updateServerStatus(); updateAutomatedStatus();
-    setInterval(updateAutomatedStatus, 60000); setInterval(updateServerStatus, 60000);
+    updateServerStatus(); 
+    updateAutomatedStatus();
+    setInterval(updateAutomatedStatus, 60000); 
+    setInterval(updateServerStatus, 60000);
 </script>
 </body>
 </html>
