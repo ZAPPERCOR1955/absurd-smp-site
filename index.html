@@ -90,7 +90,7 @@
         const container = document.getElementById('gallery-list');
         container.innerHTML = '';
         try {
-            const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/gallery`);
+            const res = await fetch(`https://api.github.com/repos/ZAPPERCOR1955/absurd-smp-site/contents/gallery`);
             const files = await res.json();
             const images = files.filter(f => f.name.match(/\.(jpg|jpeg|png|gif)$/i));
             images.forEach(f => {
@@ -184,6 +184,7 @@
 </script>
 </body>
 </html>
+
 
 
 
